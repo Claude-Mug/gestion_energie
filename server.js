@@ -12,7 +12,7 @@ const { Ultrasonic, Pir, Dht11, Ldr, Actionneur, User } = require('./models'); /
 // Charger les variables d'environnement
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 43653;
 const HOST = process.env.HOST || '0.0.0.0';
 
 const server = http.createServer(app);
