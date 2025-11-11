@@ -1,0 +1,1 @@
+// SENDING_PROMOTIONS_EMAILS.js placeholder for crons

@@ -1,0 +1,32 @@
+
+npm install express sequelize mysql2
+npm install express validator
+npm install sequelize
+npm install mysql2
+npm install dotenv
+npm install cors
+npm install express-fileupload
+npm install i18n
+npm install ejs
+npm install socket.io
+npm install jsonwebtoken
+npm install bcryptjs
+npm install nodemon --save-dev
+npm install http-errors
+npm install morgan
+npm install validator
+npm install multer
+npm install helmet
+npm install <pkg>
+
+Url <i class="fas fa-app-store-ios    "></i>
+apiBaseUrl                  endpoint             URL complète envoyée
+────────────────────────    ───────────────────  ─────────────────────────────────────────
+| URL appelée par l’ESP32 | Fichier concerné dans ton projet      | Méthode HTTP |
+| ----------------------- | ------------------------------------- | ------------ |
+| `/api/pir/data`         | `routes/service/pir.route.js`         | `POST`       |
+| `/api/ultrasonic/data`  | `routes/service/ultrasonic.route.js`  | `POST`       |
+| `/api/ldr/data`         | `routes/service/ldr.route.js`         | `POST`       |
+| `/api/dht11/data`       | `routes/service/dht11.route.js`       | `POST`       |
+| `/api/actionneurs/data` | `routes/service/actionneurs.route.js` | `POST`       |
+
