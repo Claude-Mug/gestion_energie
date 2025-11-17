@@ -13,10 +13,15 @@ const sequelize = new Sequelize(
         logging: false,
         dialectOptions: {
             ssl: {
-                ca: fs.readFileSync(process.env.DB_SSL_CA),   // ./ca.pem
+                rejectUnauthorized: true,
+                ca: fs.readFileSync(process.env.DB_SSL_CA).toString(),  // <--- IMPORTANT
             }
         }
     }
 );
+
+sequelize.authenticate()
+    .then(() => console.log("Connexion à Aiven réussie ✔️"))
+    .catch(err => console.error("❌ Erreur connexion Aiven :", err));
 
 module.exports = sequelize;
