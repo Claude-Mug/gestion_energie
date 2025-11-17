@@ -1,49 +1,59 @@
 const ip = require("ip");
 const path = require("path");
 const dotenv = require("dotenv");
-const http = require('http');
-const app = require('./app'); // Importez l'instance de l'application Express
-const { initSocket } = require('./socket');
+const http = require("http");
+const app = require("./app");
+const { initSocket } = require("./socket");
 
-// Importez Sequelize et tous vos modèles pour la synchronisation
-const sequelize = require('./utils/sequerize');
-const { Ultrasonic, Pir, Dht11, Ldr, Actionneur, User } = require('./models'); // Importez TOUS vos modèles ici
+// Charger le fichier .env AVANT tout
+dotenv.config({ path: path.resolve(__dirname, ".env") });
 
-// Charger les variables d'environnement
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+// Import Sequelize (instance déjà configurée pour Railway)
+const sequelize = require("./utils/sequerize");
 
-const PORT = process.env.PORT || 8080;
-const HOST = process.env.HOST || '0.0.0.0';
+// Import des modèles (IMPORTANT sinon Sequelize ne crée pas les tables)
+require("./models/ultrasonic");
+require("./models/pir");
+require("./models/pir");
+require("./models/dht11");
+require("./models/actionneurs");
+require("./models/user");
+
+// === CONFIG SERVER ===
+const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || "0.0.0.0";
 
 const server = http.createServer(app);
 
 // Initialiser Socket.IO
 initSocket(server);
 
-// Synchronisation de la base de données
-// Cette partie s'exécute AVANT le démarrage du serveur pour s'assurer que les tables sont prêtes.
-sequelize.sync({ alter: true }) // `alter: true` tente de faire des modifications non destructives
-    .then(() => {
-        console.log('Base de données synchronisée.');
-        // Démarrage du serveur uniquement après la synchronisation réussie
-        server.listen(PORT, HOST, () => {
-            const serverUrl = `http://${ip.address()}:${PORT}`;
-            const localUrl = `http://localhost:${PORT}`;
+// === SYNC DATABASE ===
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("✅ Connexion à aiven réussie !");
+    return sequelize.sync({ alter: true });
+  })
+  .then(() => {
+    console.log("📦 Base de données synchronisée.");
 
-            console.log(`
-    =========================================================
-     Serveur démarré avec succès!
-     
-     Accès local:    ${localUrl}
-     Accès réseau:   ${serverUrl}
-     
-     Environnement:  ${process.env.NODE_ENV || 'development'}
-    =========================================================
-            `);
-        });
-    })
-    .catch(err => {
-        console.error('Erreur de synchronisation de la base de données:', err);
-        // Quitte le processus si la synchronisation échoue
-        process.exit(1);
+    server.listen(PORT, HOST, () => {
+      console.log(`
+=========================================================
+  🚀 Serveur démarré avec succès !
+
+  🌐 Accès local:    http://localhost:${PORT}
+  📡 Accès réseau:   http://${ip.address()}:${PORT}
+
+  🛢  Base:           ${process.env.DB_NAME}
+  🗄  Host DB:        ${process.env.DB_HOST}
+  🔐 User DB:        ${process.env.DB_USER}
+=========================================================
+      `);
     });
+  })
+  .catch((err) => {
+    console.error("❌ ERREUR de connexion ou synchronisation DB :", err);
+    process.exit(1);
+  });
