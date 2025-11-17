@@ -1,19 +1,22 @@
 const { Sequelize } = require('sequelize');
+const fs = require('fs');
 require('dotenv').config();
 
 const sequelize = new Sequelize(
-    process.env.DB_NAME,
-    process.env.DB_USER,
-    process.env.DB_PASSWORD,
+    process.env.DB_NAME,        // defaultdb
+    process.env.DB_USER,        // avnadmin
+    process.env.DB_PASSWORD,    // mot de passe Aiven
     {
         host: process.env.DB_HOST,
+        port: process.env.DB_PORT,
         dialect: 'mysql',
         logging: false,
+        dialectOptions: {
+            ssl: {
+                ca: fs.readFileSync(process.env.DB_SSL_CA),   // ./ca.pem
+            }
+        }
     }
 );
-
-sequelize.authenticate()
-    .then(() => console.log('Connexion à la base de données réussie'))
-    .catch(err => console.error('Erreur de connexion à la base de données :', err));
 
 module.exports = sequelize;
